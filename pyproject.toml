@@ -1,0 +1,38 @@
+[project]
+name = "rag-eval-suite"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "gauravgulia26", email = "grvgulia007@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "dagshub>=0.7.3",
+    "deepeval>=4.3.4",
+    "kagglehub>=1.0.3",
+    "langchain>=1.5.2",
+    "langchain-groq>=1.2.1",
+    "langchain-milvus>=0.4.0",
+    "langchain-openai>=1.8.5",
+    "langgraph>=1.2.24",
+    "matplotlib>=3.11.2",
+    "mlflow>=3.18.0",
+    "pandas>=3.1.1",
+    "tqdm>=4.70.1",
+    "typer>=0.29.2",
+]
+
+[project.scripts]
+rag-eval-suite = "rag_eval_suite:main"
+download-data = 'rag_eval_suite.cli:app'
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "ipywidgets>=8.1.9",
+]
