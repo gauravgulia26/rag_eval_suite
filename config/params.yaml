@@ -1,4 +1,13 @@
-components:
-  ingestion:
-    chunking:
-      
+milvus_db:
+  index_type: AUTOINDEX
+  metric_type: COSINE
+  consistency_level: Session
+  auto_id: false
+
+splitter:
+  chunk_size: 1000
+  chunk_overlap: 200
+
+ingestion:
+  document_limit: 3
+  batch_size: 32

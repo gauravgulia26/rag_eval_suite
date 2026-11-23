@@ -22,7 +22,9 @@ dependencies = [
     "pandas>=3.1.1",
     "pymongo>=4.20.1",
     "pymupdf>=2.1",
+    "python-dotenv>=1.2.4",
     "pyyaml>=6.0.4",
+    "ruff>=0.17.6",
     "tqdm>=4.70.1",
     "typer>=0.29.2",
 ]
@@ -30,6 +32,7 @@ dependencies = [
 [project.scripts]
 rag-eval-suite = "rag_eval_suite:main"
 download-data = 'rag_eval_suite.cli:app'
+ingest-data = 'rag_eval_suite.cli.ingestion:app'
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]

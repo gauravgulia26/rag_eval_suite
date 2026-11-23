@@ -7,7 +7,6 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=ConfigDict(arbitrary_types_allowed=True))
 class Chunker:
     splitter: TextSplitter
-    corpus: list[Document]
 
-    def run(self) -> list[Document]:
-        return self.splitter.split_documents(self.corpus)
+    def run(self, corpus: list[Document]) -> list[Document]:
+        return self.splitter.split_documents(corpus)

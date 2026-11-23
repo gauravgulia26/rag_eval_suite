@@ -1,4 +1,4 @@
-from .chunking import Chunker
-from .loading import Loader
+from ...infra.chunkers import Chunker
+from ...infra.loaders import Loader
 
 __all__ = ["Chunker", "Loader"]
