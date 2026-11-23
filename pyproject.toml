@@ -12,6 +12,7 @@ dependencies = [
     "deepeval>=4.3.4",
     "kagglehub>=1.0.3",
     "langchain>=1.5.2",
+    "langchain-community>=0.4.2",
     "langchain-groq>=1.2.1",
     "langchain-milvus>=0.4.0",
     "langchain-openai>=1.8.5",
@@ -19,6 +20,9 @@ dependencies = [
     "matplotlib>=3.11.2",
     "mlflow>=3.18.0",
     "pandas>=3.1.1",
+    "pymongo>=4.20.1",
+    "pymupdf>=2.1",
+    "pyyaml>=6.0.4",
     "tqdm>=4.70.1",
     "typer>=0.29.2",
 ]
