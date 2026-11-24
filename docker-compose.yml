@@ -1,0 +1,63 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - fastapi
+      - dev
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --entrypoint
+      - rag_eval_suite.api.main:app
+    env_file:
+      - .env
+    environment:
+      WATCHFILES_FORCE_POLLING: "true"
+    volumes:
+      - .:/app
+      - rag_eval_venv:/app/.venv
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://localhost:8000/health')
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command:
+      - streamlit
+      - run
+      - ui/app.py
+      - --server.address=0.0.0.0
+      - --server.port=8501
+      - --server.headless=true
+    environment:
+      RAG_API_URL: http://api:8000
+      STREAMLIT_SERVER_FILE_WATCHER_TYPE: poll
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - rag_eval_venv:/app/.venv
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8501:8501"
+
+volumes:
+  rag_eval_venv:

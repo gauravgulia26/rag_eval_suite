@@ -53,6 +53,8 @@ uv run ingest-data
 
 The ingestion limit, batch size, chunk size, overlap, and Milvus settings are configured in [`config/params.yaml`](config/params.yaml).
 
+The Q&A graph uses Milvus hybrid retrieval: dense OpenAI embeddings are fused with server-side BM25 keyword search. If the collection was previously created as dense-only, re-ingest it so Milvus can create the required `dense` and `sparse` fields.
+
 ## Evaluation
 
 Use the evaluation notebook to inspect the RAG workflow and extend it with DeepEval metrics, test cases, and experiment tracking:
@@ -71,6 +73,22 @@ uv run download-data <owner/dataset>
 
 # Run ingestion with the configured defaults
 uv run ingest-data
+```
+
+## Run with Docker
+
+Start the API and Streamlit UI together. Compose loads the required provider keys from `.env` and keeps the UI pointed at the internal API service.
+
+```bash
+docker compose up --build
+```
+
+Open [http://localhost:8501](http://localhost:8501) for the chat UI or [http://localhost:8000/docs](http://localhost:8000/docs) for the API documentation.
+
+Stop the services with:
+
+```bash
+docker compose down
 ```
 
 ## Project layout

@@ -10,6 +10,7 @@ requires-python = ">=3.14"
 dependencies = [
     "dagshub>=0.7.3",
     "deepeval>=4.3.4",
+    "fastapi[standard]>=0.115.0",
     "kagglehub>=1.0.3",
     "langchain>=1.5.2",
     "langchain-community>=0.4.2",
@@ -24,9 +25,12 @@ dependencies = [
     "pymupdf>=2.1",
     "python-dotenv>=1.2.4",
     "pyyaml>=6.0.4",
+    "requests>=2.32.0",
     "ruff>=0.17.6",
+    "streamlit>=1.67.0",
     "tqdm>=4.70.1",
     "typer>=0.29.2",
+    "uvicorn[standard]>=0.34.0",
 ]
 
 [project.scripts]

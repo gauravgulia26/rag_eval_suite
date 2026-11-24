@@ -1,0 +1,11 @@
+.env
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+.streamlit/secrets.toml
+data/raw
+notebooks
+.agents
+.claude

@@ -48,7 +48,7 @@ def get_pipeline(
     return IngestionPipeline(
         loader=loader_obj,
         chunker=chunker_obj,
-        vector_store=db_store.run(),
+        vector_store=db_store.run(hybrid=True),
     )
 
 
