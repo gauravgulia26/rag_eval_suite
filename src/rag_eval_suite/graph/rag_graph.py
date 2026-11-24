@@ -10,12 +10,14 @@ from typing import TypedDict
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
+from langchain_core.runnables import RunnableConfig
 from langgraph.graph import END, START, StateGraph
 
 from rag_eval_suite.application.retrievers import get_hybrid_retriever
 from rag_eval_suite.config.paths import PARAM_FILE_PATH, PROJECT_ROOT
 from rag_eval_suite.infra.embeddings import get_openai_embeddings
 from rag_eval_suite.infra.llm import get_groq_llm
+from rag_eval_suite.infra.observability import configure_langsmith, get_trace_config
 from rag_eval_suite.infra.vectorstores import MilvusStore
 
 
@@ -23,6 +25,7 @@ class RAGState(TypedDict, total=False):
     """State passed through the retrieval and answer-generation nodes."""
 
     question: str
+    history: list[dict[str, str]]
     documents: list[Document]
     context: str
     answer: str
@@ -62,6 +65,16 @@ def _format_context(documents: list[Document]) -> str:
     return "\n\n".join(sections)
 
 
+def _format_history(history: list[dict[str, str]]) -> str:
+    """Format recent chat turns for follow-up question understanding."""
+    if not history:
+        return "No previous conversation."
+    return "\n".join(
+        f"{turn.get('role', 'user').title()}: {turn.get('content', '').strip()}"
+        for turn in history[-12:]
+    )
+
+
 class RAGGraph:
     """Compiled graph that retrieves context and generates a grounded answer."""
 
@@ -77,7 +90,13 @@ class RAGGraph:
         self.llm = llm
         self.retrieval_k = retrieval_k
         self.prompt = ChatPromptTemplate.from_messages(
-            [("system", _read_prompt()), ("human", "{question}")]
+            [
+                ("system", _read_prompt()),
+                (
+                    "human",
+                    "Conversation history:\n{history}\n\nCurrent question:\n{question}",
+                ),
+            ]
         )
         self.workflow = self._build_workflow()
 
@@ -90,13 +109,33 @@ class RAGGraph:
         graph.add_edge("generate", END)
         return graph.compile()
 
-    def retrieve(self, state: RAGState) -> RAGState:
-        documents = self.retriever.invoke(state["question"])
+    def retrieve(
+        self,
+        state: RAGState,
+        config: RunnableConfig | None = None,
+    ) -> RAGState:
+        history = state.get("history", [])
+        retrieval_query = state["question"]
+        if history:
+            retrieval_query = (
+                f"{state['question']}\n\nConversation context:\n"
+                f"{_format_history(history)}"
+            )
+        documents = self.retriever.invoke(retrieval_query, config=config)
         return {"documents": documents, "context": _format_context(documents)}
 
-    def generate(self, state: RAGState) -> RAGState:
+    def generate(
+        self,
+        state: RAGState,
+        config: RunnableConfig | None = None,
+    ) -> RAGState:
         response = (self.prompt | self.llm).invoke(
-            {"context": state.get("context", ""), "question": state["question"]}
+            {
+                "context": state.get("context", ""),
+                "history": _format_history(state.get("history", [])),
+                "question": state["question"],
+            },
+            config=config,
         )
         answer = (
             response.content
@@ -105,7 +144,11 @@ class RAGGraph:
         )
         return {"answer": answer}
 
-    def invoke(self, question: str) -> RAGState:
+    def invoke(
+        self,
+        question: str,
+        history: list[dict[str, str]] | None = None,
+    ) -> RAGState:
         """Run retrieval and generation for one user question."""
         question = question.strip()
         if not question:
@@ -117,9 +160,16 @@ class RAGGraph:
                 "context": "",
                 "answer": fast_response,
             }
-        return self.workflow.invoke({"question": question})
+        return self.workflow.invoke(
+            {"question": question, "history": history or []},
+            config=get_trace_config(self.retrieval_k),
+        )
 
-    def stream_answer(self, question: str) -> Iterator[dict[str, object]]:
+    def stream_answer(
+        self,
+        question: str,
+        history: list[dict[str, str]] | None = None,
+    ) -> Iterator[dict[str, object]]:
         """Yield retrieved sources followed by answer tokens."""
         question = question.strip()
         if not question:
@@ -129,13 +179,22 @@ class RAGGraph:
             yield {"type": "token", "content": fast_response}
             return
 
-        retrieved = self.retrieve({"question": question})
+        trace_config = get_trace_config(self.retrieval_k)
+        history = history or []
+        retrieved = self.retrieve(
+            {"question": question, "history": history}, config=trace_config
+        )
         documents = retrieved.get("documents", [])
         yield {"type": "sources", "sources": _source_payload(documents)}
 
         chain = self.prompt | self.llm
         for chunk in chain.stream(
-            {"context": retrieved["context"], "question": question}
+            {
+                "context": retrieved["context"],
+                "history": _format_history(history),
+                "question": question,
+            },
+            config=trace_config,
         ):
             content = getattr(chunk, "content", "")
             if isinstance(content, str) and content:
@@ -147,6 +206,7 @@ def get_rag_graph(
     retrieval_k: int = 5,
 ) -> RAGGraph:
     """Build the RAG graph connected to the existing Zilliz collection."""
+    configure_langsmith()
     store = MilvusStore(
         embedding_function=get_openai_embeddings(),
         collection_name=collection_name

@@ -32,7 +32,7 @@ def initialize_state() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "dark_mode" not in st.session_state:
-        st.session_state.dark_mode = False
+        st.session_state.dark_mode = True
     if "stream_sources" not in st.session_state:
         st.session_state.stream_sources = []
 
@@ -82,8 +82,13 @@ def apply_theme(dark_mode: bool) -> None:
             --rag-user: {palette['user']};
             --rag-code: {palette['code']};
         }}
-        .stApp {{ background: var(--rag-page) !important; color: var(--rag-text) !important; }}
+        html, body, .stApp, [data-testid="stAppViewContainer"],
+        [data-testid="stAppViewBlockContainer"] {{
+            background: var(--rag-page) !important;
+            color: var(--rag-text) !important;
+        }}
         [data-testid="stHeader"] {{ background: transparent !important; }}
+        [data-testid="stBottomBlockContainer"] {{ background: var(--rag-page) !important; }}
         [data-testid="stSidebar"], [data-testid="stSidebar"] > div {{
             background: var(--rag-surface) !important;
             border-right: 1px solid var(--rag-border) !important;
@@ -171,11 +176,19 @@ def apply_theme(dark_mode: bool) -> None:
     )
 
 
-def stream_answer(question: str, retrieval_k: int = 5) -> Iterator[str]:
+def stream_answer(
+    question: str,
+    retrieval_k: int = 5,
+    history: list[dict[str, str]] | None = None,
+) -> Iterator[str]:
     """Yield answer tokens from the API's server-sent event stream."""
     with requests.post(
         f"{API_URL.rstrip('/')}/ask/stream",
-        json={"question": question, "retrieval_k": retrieval_k},
+        json={
+            "question": question,
+            "retrieval_k": retrieval_k,
+            "history": history or [],
+        },
         stream=True,
         timeout=180,
     ) as response:
@@ -261,6 +274,10 @@ for message in st.session_state.messages:
 question = prompt_choice or st.chat_input("Ask a question about your documents…")
 if question:
     suggestion_slot.empty()
+    history = [
+        {"role": message["role"], "content": message["content"]}
+        for message in st.session_state.messages[-12:]
+    ]
     st.session_state.messages.append({"role": "user", "content": question})
     with st.chat_message("user", avatar=":material/person:"):
         st.markdown(question)
@@ -269,7 +286,7 @@ if question:
         st.session_state.stream_sources = []
         status = st.status("Searching your knowledge base…", expanded=False)
         try:
-            answer = st.write_stream(stream_answer(question, retrieval_k))
+            answer = st.write_stream(stream_answer(question, retrieval_k, history))
             sources = st.session_state.get("stream_sources", [])
             status.update(label="Answer ready", state="complete")
             if sources:

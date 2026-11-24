@@ -43,6 +43,11 @@ Create a `.env` file in the project root:
 OPENAI_API_KEY=your-openai-key
 ZILLIZ_ENDPOINT=your-zilliz-endpoint
 ZILLIZ_APIKEY=your-zilliz-api-key
+GROQAPI_KEY=your-groq-api-key
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=your-langsmith-api-key
+LANGCHAIN_PROJECT=rag-eval-suite
+LANGCHAIN_ENDPOINT=https://api.smith.langchain.com
 ```
 
 Run ingestion for the first three PDFs in `data/raw`:
@@ -54,6 +59,8 @@ uv run ingest-data
 The ingestion limit, batch size, chunk size, overlap, and Milvus settings are configured in [`config/params.yaml`](config/params.yaml).
 
 The Q&A graph uses Milvus hybrid retrieval: dense OpenAI embeddings are fused with server-side BM25 keyword search. If the collection was previously created as dense-only, re-ingest it so Milvus can create the required `dense` and `sparse` fields.
+
+LangSmith tracing is loaded from `.env` and covers the LangGraph workflow, Milvus retrieval, Groq generation, streaming runs, and request metadata. The API health endpoint reports whether tracing is enabled without exposing credentials.
 
 ## Evaluation
 

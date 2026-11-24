@@ -3,12 +3,14 @@
 import json
 from collections.abc import AsyncIterator
 from functools import lru_cache
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from starlette.responses import StreamingResponse
 
 from rag_eval_suite.graph import RAGGraph, get_fast_response, get_rag_graph
+from rag_eval_suite.infra.observability import langsmith_status
 
 app = FastAPI(
     title="RAG Eval Suite API",
@@ -17,9 +19,15 @@ app = FastAPI(
 )
 
 
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=12_000)
+
+
 class QuestionRequest(BaseModel):
     question: str = Field(min_length=1, description="Question to answer from the corpus")
     retrieval_k: int = Field(default=5, ge=1, le=20)
+    history: list[ChatTurn] = Field(default_factory=list, max_length=12)
 
 
 class Source(BaseModel):
@@ -40,7 +48,12 @@ def _get_graph(retrieval_k: int) -> RAGGraph:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    status = langsmith_status()
+    return {
+        "status": "ok",
+        "langsmith_tracing": "enabled" if status["enabled"] else "disabled",
+        "langsmith_project": str(status["project"]),
+    }
 
 
 @app.post("/ask", response_model=QuestionResponse)
@@ -48,7 +61,10 @@ def ask(request: QuestionRequest) -> QuestionResponse:
     if fast_response := get_fast_response(request.question):
         return QuestionResponse(answer=fast_response, sources=[])
     try:
-        state = _get_graph(request.retrieval_k).invoke(request.question)
+        state = _get_graph(request.retrieval_k).invoke(
+            request.question,
+            history=[turn.model_dump() for turn in request.history],
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:
@@ -81,7 +97,10 @@ def ask_stream(request: QuestionRequest) -> StreamingResponse:
                 yield "data: [DONE]\n\n"
                 return
             graph = _get_graph(request.retrieval_k)
-            for event in graph.stream_answer(request.question):
+            for event in graph.stream_answer(
+                request.question,
+                history=[turn.model_dump() for turn in request.history],
+            ):
                 yield f"data: {json.dumps(event)}\n\n"
             yield "data: [DONE]\n\n"
         except ValueError as exc:
