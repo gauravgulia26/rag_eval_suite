@@ -1,4 +1,5 @@
 milvus_db:
+  collection_name: EvaluationRagHybridCollection
   index_type: AUTOINDEX
   metric_type: COSINE
   consistency_level: Session

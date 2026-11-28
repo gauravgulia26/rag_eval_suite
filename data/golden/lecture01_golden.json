@@ -1,0 +1,182 @@
+[
+  {
+    "unique_id": "lecture01_q001",
+    "query": "What is machine learning in simple words according to the lecture?",
+    "ideal_answer": "Machine learning is the idea of giving computers the ability to learn without explicitly programming every rule for them."
+  },
+  {
+    "unique_id": "lecture01_q002",
+    "query": "Why is handwritten digit recognition a good example of machine learning?",
+    "ideal_answer": "It is very difficult to write a normal program that handles all the ways people write digits by hand. A learning algorithm can learn how to recognize the digits from examples instead."
+  },
+  {
+    "unique_id": "lecture01_q003",
+    "query": "How did Arthur Samuel's checkers program learn to play better?",
+    "ideal_answer": "The program played many games of checkers against itself. Over time it learned which board positions were associated with wins and losses, and it eventually played better than Arthur Samuel himself."
+  },
+  {
+    "unique_id": "lecture01_q004",
+    "query": "Can you explain Tom Mitchell's definition of a learning problem?",
+    "ideal_answer": "A program learns from experience E for a task T and performance measure P when its performance on T, measured by P, improves as it gets more experience E."
+  },
+  {
+    "unique_id": "lecture01_q005",
+    "query": "What are E, T, and P in the checkers example?",
+    "ideal_answer": "E is playing many games of checkers, T is the task of playing checkers, and P is a measure such as the fraction of games the program wins against a set of human opponents."
+  },
+  {
+    "unique_id": "lecture01_q006",
+    "query": "What does supervised learning mean?",
+    "ideal_answer": "In supervised learning, the training data includes examples of inputs together with the correct outputs. The algorithm learns the relationship between them so it can predict outputs for new inputs."
+  },
+  {
+    "unique_id": "lecture01_q007",
+    "query": "Why is predicting a house price called supervised learning?",
+    "ideal_answer": "The algorithm is given house sizes as inputs and the actual prices as the correct answers. It uses those labeled examples to learn how to predict the price of another house."
+  },
+  {
+    "unique_id": "lecture01_q008",
+    "query": "What is the difference between regression and classification here?",
+    "ideal_answer": "Regression predicts a continuous value, such as a house price. Classification predicts a discrete category, such as whether a tumor is malignant or benign."
+  },
+  {
+    "unique_id": "lecture01_q009",
+    "query": "Can you give the lecture's example of a regression problem?",
+    "ideal_answer": "Predicting the selling price of a house from its square footage is the lecture's regression example because the price is a continuous number."
+  },
+  {
+    "unique_id": "lecture01_q010",
+    "query": "What is the breast tumor example trying to predict?",
+    "ideal_answer": "It tries to predict whether a tumor is malignant or benign from features of the tumor and possibly other information such as the patient's age."
+  },
+  {
+    "unique_id": "lecture01_q011",
+    "query": "What kinds of features could be used for the tumor classification example?",
+    "ideal_answer": "The lecture mentions patient age and tumor size, as well as properties such as clump thickness, uniformity of cell size, uniformity of cell shape, and cell adhesion."
+  },
+  {
+    "unique_id": "lecture01_q012",
+    "query": "What does a classifier do in the tumor example?",
+    "ideal_answer": "It learns a boundary that separates malignant tumors from benign tumors. For a new patient, it uses the patient's features to predict which class the tumor belongs to."
+  },
+  {
+    "unique_id": "lecture01_q013",
+    "query": "What is learning theory supposed to help us understand?",
+    "ideal_answer": "It is meant to explain how and why learning algorithms work, when they can be guaranteed to work, what functions they can approximate, and how much training data they need."
+  },
+  {
+    "unique_id": "lecture01_q014",
+    "query": "Why does the lecture compare using machine learning tools to carpentry?",
+    "ideal_answer": "The point is that knowing the algorithms is not enough. Like a skilled carpenter using ordinary tools very well, a skilled machine learning practitioner knows how to choose and apply the tools effectively."
+  },
+  {
+    "unique_id": "lecture01_q015",
+    "query": "What kind of question can learning theory answer about training data?",
+    "ideal_answer": "It can help answer how many examples are needed for an algorithm to learn a useful pattern, and whether collecting more data would help or just waste time."
+  },
+  {
+    "unique_id": "lecture01_q016",
+    "query": "What is unsupervised learning in the lecture?",
+    "ideal_answer": "In unsupervised learning, the algorithm receives data without the correct answer for each example and is asked to find interesting structure in the data."
+  },
+  {
+    "unique_id": "lecture01_q017",
+    "query": "How is unsupervised learning different from supervised learning?",
+    "ideal_answer": "Supervised learning has labeled examples with right answers. Unsupervised learning has only the data, so the algorithm must discover patterns or structure on its own."
+  },
+  {
+    "unique_id": "lecture01_q018",
+    "query": "What is clustering and why is it an unsupervised method?",
+    "ideal_answer": "Clustering groups data points that appear similar, such as dividing a data set into two clusters. It is unsupervised because the groups are discovered without being given labels beforehand."
+  },
+  {
+    "unique_id": "lecture01_q019",
+    "query": "How can clustering be used with gene data?",
+    "ideal_answer": "Genes can be grouped into clusters based on how they respond to different experiments. This can reveal groups of genes with similar behavior."
+  },
+  {
+    "unique_id": "lecture01_q020",
+    "query": "How did the lecture connect unsupervised learning to image processing?",
+    "ideal_answer": "An unsupervised algorithm can group pixels that seem to belong together, producing regions in an image. Those regions can be useful for computer vision and image processing."
+  },
+  {
+    "unique_id": "lecture01_q021",
+    "query": "How was clustering used in the Stanford campus 3D example?",
+    "ideal_answer": "The image was first divided into regions by clustering pixels. That grouping was then used as a preprocessing step for learning a 3D model of the campus from a single image."
+  },
+  {
+    "unique_id": "lecture01_q022",
+    "query": "What is the cocktail party problem?",
+    "ideal_answer": "It is the problem of separating one person's voice from other voices and background sounds when several sources are mixed together at a party."
+  },
+  {
+    "unique_id": "lecture01_q023",
+    "query": "How can two microphones help separate speakers?",
+    "ideal_answer": "Each microphone hears a different mixture of the speakers because it is at a different distance and the speakers have different volumes. An unsupervised algorithm can use those different mixtures to recover the separate sources."
+  },
+  {
+    "unique_id": "lecture01_q024",
+    "query": "What is independent component analysis doing in the audio example?",
+    "ideal_answer": "Independent component analysis discovers the underlying independent sound sources in overlapping microphone recordings and separates them, such as recovering speech from two different speakers."
+  },
+  {
+    "unique_id": "lecture01_q025",
+    "query": "What is reinforcement learning, like the lecture explained it?",
+    "ideal_answer": "Reinforcement learning is used when an agent must make a sequence of decisions over time. It learns which actions are good or bad from reward and punishment signals."
+  },
+  {
+    "unique_id": "lecture01_q026",
+    "query": "How is reinforcement learning different from the cancer prediction example?",
+    "ideal_answer": "Cancer prediction is presented as a one-shot decision followed by a consequence. Reinforcement learning usually involves a sequence of decisions, where early choices can affect later outcomes."
+  },
+  {
+    "unique_id": "lecture01_q027",
+    "query": "What does a reward function do in reinforcement learning?",
+    "ideal_answer": "A reward function specifies which outcomes or behaviors are good and which are bad. The learning algorithm then tries to maximize positive rewards and minimize punishments."
+  },
+  {
+    "unique_id": "lecture01_q028",
+    "query": "How did the helicopter example show reinforcement learning?",
+    "ideal_answer": "A controller for an autonomous helicopter was learned from feedback about its behavior. Successful actions received positive feedback, while crashes or bad behavior received negative feedback, helping it learn to fly."
+  },
+  {
+    "unique_id": "lecture01_q029",
+    "query": "What are the four main topics covered in the course overview?",
+    "ideal_answer": "The four major topics are supervised learning, learning theory, unsupervised learning, and reinforcement learning."
+  },
+  {
+    "unique_id": "lecture01_q030",
+    "query": "What machine learning applications did the instructor mention people may use without noticing?",
+    "ideal_answer": "Examples include reading handwritten ZIP codes on mail, reading check amounts, detecting credit-card fraud, recommending products or movies, and optimizing driving for fuel efficiency."
+  },
+  {
+    "unique_id": "lecture01_q031",
+    "query": "What background does the course assume students already have?",
+    "ideal_answer": "The course assumes basic computer science and programming, basic probability and statistics, and basic linear algebra. Examples mentioned include data structures, random variables, expectation, variance, vectors, matrices, multiplication, and matrix inverses."
+  },
+  {
+    "unique_id": "lecture01_q032",
+    "query": "Why does the course use MATLAB or Octave?",
+    "ideal_answer": "They make it easy to work with matrices, numerical routines, data, and plots, so implementing learning algorithms takes less code than it would in languages such as C or Java. Octave is a free option that works for nearly everything needed in the class."
+  },
+  {
+    "unique_id": "lecture01_q033",
+    "query": "Are discussion sections required, and what are they for?",
+    "ideal_answer": "Attendance is optional. Early discussion sections review prerequisites such as probability, statistics, and linear algebra, while later sections cover extensions such as convex optimization and hidden Markov models."
+  },
+  {
+    "unique_id": "lecture01_q034",
+    "query": "What is the class project supposed to be about?",
+    "ideal_answer": "Students should apply machine learning to an interesting problem or investigate an aspect of machine learning. The goal is to produce a cool, ideally publishable piece of machine learning work."
+  },
+  {
+    "unique_id": "lecture01_q035",
+    "query": "How many people can work together on the term project?",
+    "ideal_answer": "A project can be done alone, in a group of two, or in a group of up to three people. The grading is the same regardless of the group size."
+  },
+  {
+    "unique_id": "lecture01_q036",
+    "query": "What was the honor code advice for working in study groups?",
+    "ideal_answer": "Students may discuss homework together, but each person must independently reconstruct and write their own solution without referring to notes from the joint study session. Copying or directly showing solutions is not allowed, and students should not use solutions from previous years."
+  }
+]

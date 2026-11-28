@@ -27,12 +27,20 @@ class MilvusStore:
     def list_parameters(self) -> dict:
         return load_yaml(path=self.param_file_path)[self.param_file_key]
 
-    def run(self, *, hybrid: bool = False) -> Milvus:
+    def run(
+        self,
+        *,
+        hybrid: bool = False,
+        inspect_existing_schema: bool = True,
+    ) -> Milvus:
         """Create a Milvus vector store connection.
 
         Hybrid mode adds Milvus' server-side BM25 function alongside the dense
         embedding field.  The collection must have been created and populated
-        with the same dense+sparse schema for this mode to work.
+        with the same dense+sparse schema for this mode to work. Set
+        ``inspect_existing_schema=False`` when the collection schema is known;
+        this avoids an extra remote ``has_collection`` and
+        ``describe_collection`` round trip before LangChain connects.
         """
         load_dotenv(dotenv_path=get_project_root() / ".env")
         base_params = self.list_parameters
@@ -57,7 +65,11 @@ class MilvusStore:
             "metric_type": base_params.get("metric_type"),
         }
         if hybrid:
-            existing_vector_fields = self._existing_vector_fields(endpoint, api_key)
+            existing_vector_fields = (
+                self._existing_vector_fields(endpoint, api_key)
+                if inspect_existing_schema
+                else []
+            )
             if existing_vector_fields and not {"dense", "sparse"}.issubset(
                 existing_vector_fields
             ):
